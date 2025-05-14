@@ -2,7 +2,7 @@
 //  measureApp.swift
 //  measure
 //
-//  Created by Apnitor Solutions on 14/05/25.
+//  Created by Edward Focer on 14/05/25.
 //
 
 import SwiftUI

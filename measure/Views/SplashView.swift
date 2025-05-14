@@ -2,7 +2,7 @@
 //  SplashView.swift
 //  measure
 //
-//  Created by Apnitor Solutions on 14/05/25.
+//  Created by Edward Focer on 14/05/25.
 //
 
 import SwiftUI
@@ -12,7 +12,7 @@ struct SplashView: View {
 
     var body: some View {
         if isActive {
-            ContentView()
+            HomeView()
         } else {
             ZStack {
                 LinearGradient(
