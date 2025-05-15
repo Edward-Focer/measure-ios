@@ -75,7 +75,7 @@ struct CreateNewProjectView: View {
                         
                         // Next Button
                         NavigationLink(
-                            destination: AdditionalInfoView(dismissSheet: dismissSheet),
+                            destination: AdditionalInfoView(dismissSheet: dismissSheet, contactName: contactName),
                             isActive: $goToNext
                         ) {
                             EmptyView()

@@ -12,6 +12,7 @@ import AVFoundation
 struct AdditionalInfoView: View {
     @Environment(\.presentationMode) var presentationMode
     var dismissSheet: (() -> Void)? = nil
+    var contactName: String
     @State private var addressLine1 = ""
     @State private var addressLine2 = ""
     @State private var city = ""
@@ -24,6 +25,7 @@ struct AdditionalInfoView: View {
     @State private var selectedImage: UIImage? = nil
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var showReviewProject = false
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -120,7 +122,9 @@ struct AdditionalInfoView: View {
                     }
                     
                     Button("Next") {
-                        // Handle submit
+                        withAnimation {
+                                showReviewProject = true
+                            }
                     }
                     .font(.system(size: 17, weight: .semibold))
                     .frame(maxWidth: .infinity)
@@ -132,9 +136,42 @@ struct AdditionalInfoView: View {
                 }
                 .padding(20)
             }
+            
+            if showReviewProject {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation {
+                            showReviewProject = false
+                        }
+                    }
+                
+                VStack {
+                    Spacer()
+
+                    ReviewProjectView(
+                        projectNotes: projectNotes,
+                        contactName: contactName,
+                        selectedImage: selectedImage,
+                        dismissSheet: {
+                            withAnimation {
+                                showReviewProject = false
+                                dismissSheet?()
+                            }
+                        }
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: (selectedImage != nil) ? (UIScreen.main.bounds.height * 0.75) : (UIScreen.main.bounds.height * 0.50))
+                    .background(Color.white)
+                    .cornerRadius(16, corners: [.topLeft, .topRight])
+                    .shadow(radius: 10)
+                    .zIndex(1)
+                }
+                .ignoresSafeArea(edges: .bottom)
+            }
         }
         .fullScreenCover(isPresented: $showCamera) {
-            CustomCameraView()
+            CustomCameraView(selectedImage: $selectedImage)
         }
         .sheet(isPresented: $showGallery) {
             GalleryImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)

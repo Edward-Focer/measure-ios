@@ -36,6 +36,7 @@ struct HomeView: View {
                         NavigationView {
                             CreateNewProjectView(dismissSheet: {
                                 showCreateProject = false
+                                selectedTab = 1
                             })
                         }
                         .presentationDetents([.fraction(0.80)])
@@ -56,7 +57,7 @@ struct HomeView: View {
 
                 // Section Header
                 HStack {
-                    Text("Active Projects")
+                    Text("\(tabs[selectedTab]) Projects")
                         .font(.headline)
                     Spacer()
                     Button("Sort") {

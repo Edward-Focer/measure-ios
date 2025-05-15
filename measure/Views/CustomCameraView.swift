@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomCameraView: View {
     @Environment(\.dismiss) var dismiss
-
+    @Binding var selectedImage: UIImage?
     @StateObject private var cameraService = CameraService()
 
     var body: some View {
@@ -33,6 +33,7 @@ struct CustomCameraView: View {
                         Spacer()
 
                         Button("Use Photo") {
+                            selectedImage = image
                             dismiss()
                         }
                         .padding()
