@@ -9,102 +9,112 @@ import SwiftUI
 
 struct CreateNewProjectView: View {
     @Environment(\.presentationMode) var presentationMode
-
+    var dismissSheet: (() -> Void)? = nil
+    
     @State private var projectName = ""
     @State private var contactName = ""
     @State private var email = ""
     @State private var phoneNumber = ""
-
+    @State private var goToNext = false
+    
+    
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            // Background
-            Color(red: 230/255, green: 234/255, blue: 239/255) // Deep Sea 50
-                .ignoresSafeArea()
-
-            // Scrollable Form Content
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Spacer().frame(height: 32)
-
-                    // Title
-                    Text("Create new project")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255)) // Deep Sea 500
-
-                    Text("Fill out the detailed information below")
-                        .font(.system(size: 17, weight: .regular))
-                        .foregroundColor(Color(red: 84/255, green: 115/255, blue: 147/255)) // Deep Sea 300
-
-                    // Project Name
-                    Group {
-                        Text("Give this project a name")
-                            .font(.system(size: 16, weight: .medium))
+            ZStack(alignment: .topTrailing) {
+                // Background
+                Color(red: 230/255, green: 234/255, blue: 239/255) // Deep Sea 50
+                    .ignoresSafeArea()
+                
+                // Scrollable Form Content
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Spacer().frame(height: 32)
+                        
+                        // Title
+                        Text("Create new project")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255)) // Deep Sea 500
+                        
+                        Text("Fill out the detailed information below")
+                            .font(.system(size: 17, weight: .regular))
+                            .foregroundColor(Color(red: 84/255, green: 115/255, blue: 147/255)) // Deep Sea 300
+                        
+                        // Project Name
+                        Group {
+                            Text("Give this project a name")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
+                            
+                            CustomTextField(placeholder: "Name", text: $projectName)
+                        }
+                        
+                        // Homeowner Details
+                        Text("Homeowner Details")
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-
-                        CustomTextField(placeholder: "Name", text: $projectName)
+                            .padding(.top)
+                        
+                        Group {
+                            Text("Primary contact name")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
+                            
+                            CustomTextField(placeholder: "Name", text: $contactName)
+                            
+                            Text("Email")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
+                            
+                            CustomTextField(placeholder: "Email", text: $email, keyboardType: .emailAddress)
+                            
+                            Text("Phone number")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
+                            
+                            CustomTextField(placeholder: "+1 xxx xxx xxx", text: $phoneNumber, keyboardType: .phonePad)
+                        }
+                        
+                        // Next Button
+                        NavigationLink(
+                            destination: AdditionalInfoView(dismissSheet: dismissSheet),
+                            isActive: $goToNext
+                        ) {
+                            EmptyView()
+                        }
+                        
+                        Button(action: {
+                            goToNext = true
+                        }) {
+                            Text("Next")
+                                .font(.system(size: 17, weight: .semibold))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(Color(red: 0/255, green: 46/255, blue: 94/255))
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+                        .padding(.top, 20)
+                        
+                        Spacer()
                     }
-
-                    // Homeowner Details
-                    Text("Homeowner Details")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-                        .padding(.top)
-
-                    Group {
-                        Text("Primary contact name")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-
-                        CustomTextField(placeholder: "Name", text: $contactName)
-
-                        Text("Email")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-
-                        CustomTextField(placeholder: "Email", text: $email, keyboardType: .emailAddress)
-
-                        Text("Phone number")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-
-                        CustomTextField(placeholder: "+1 xxx xxx xxx", text: $phoneNumber, keyboardType: .phonePad)
-                    }
-
-                    // Next Button
-                    Button(action: {
-                        // Proceed to next screen
-                    }) {
-                        Text("Next")
-                            .font(.system(size: 17, weight: .semibold))
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(Color(red: 0/255, green: 46/255, blue: 94/255)) // Deep Sea 500
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
-                    .padding(.top, 20)
-
-                    Spacer()
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 14)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 14)
+                
+                // Custom Circular X Button
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "xmark")
+                        .foregroundColor(Color.gray)
+                        .frame(width: 24, height: 24)
+                        .padding(4)
+                        .background(
+                            Circle()
+                                .fill(Color(red: 203/255, green: 208/255, blue: 213/255)) // approx. #CBD0D5
+                        )
+                }
+                .padding(.trailing, 20)
+                .padding(.top, 10)
             }
-
-            // Custom Circular X Button
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                Image(systemName: "xmark")
-                    .foregroundColor(Color.gray)
-                    .frame(width: 24, height: 24)
-                    .padding(4)
-                    .background(
-                        Circle()
-                            .fill(Color(red: 203/255, green: 208/255, blue: 213/255)) // approx. #CBD0D5
-                    )
-            }
-            .padding(.trailing, 20)
-            .padding(.top, 10)
-        }
     }
 }

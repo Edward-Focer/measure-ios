@@ -33,9 +33,13 @@ struct HomeView: View {
                     .font(.system(size: 17, weight: .medium))
                     .foregroundColor(.white)
                     .sheet(isPresented: $showCreateProject) {
-                        CreateNewProjectView()
-                            .presentationDetents([.fraction(0.80)])
-                            .presentationDragIndicator(.visible)
+                        NavigationView {
+                            CreateNewProjectView(dismissSheet: {
+                                showCreateProject = false
+                            })
+                        }
+                        .presentationDetents([.fraction(0.80)])
+                        .presentationDragIndicator(.visible)
                     }
                 }
                 .padding()
