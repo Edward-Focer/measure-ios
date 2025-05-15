@@ -11,14 +11,8 @@ import AVFoundation
 
 struct AdditionalInfoView: View {
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var viewModel: CreateProjectViewModel
     var dismissSheet: (() -> Void)? = nil
-    var contactName: String
-    @State private var addressLine1 = ""
-    @State private var addressLine2 = ""
-    @State private var city = ""
-    @State private var state = ""
-    @State private var zipCode = ""
-    @State private var projectNotes = ""
     
     @State private var showCamera = false
     @State private var showGallery = false
@@ -72,20 +66,20 @@ struct AdditionalInfoView: View {
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
                         
-                        CustomTextField(placeholder: "Address line 1", text: $addressLine1)
-                        CustomTextField(placeholder: "Address line 2", text: $addressLine2)
-                        CustomTextField(placeholder: "City", text: $city)
+                        CustomTextField(placeholder: "Address line 1", text: $viewModel.address.line1)
+                        CustomTextField(placeholder: "Address line 2", text: $viewModel.address.line2)
+                        CustomTextField(placeholder: "City", text: $viewModel.address.city)
                         
                         HStack(spacing: 12) {
-                            CustomTextField(placeholder: "State", text: $state)
-                            CustomTextField(placeholder: "Zip Code", text: $zipCode)
+                            CustomTextField(placeholder: "State", text: $viewModel.address.state)
+                            CustomTextField(placeholder: "Zip Code", text: $viewModel.address.zipcode)
                         }
                     }
                     
                     Text("Project notes")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-                    CustomTextField(placeholder: "Address line 1", text: $projectNotes)
+                    CustomTextField(placeholder: "Address line 1", text: $viewModel.notes)
                     
                     Text("Project photos")
                         .font(.system(size: 16, weight: .bold))
@@ -150,8 +144,6 @@ struct AdditionalInfoView: View {
                     Spacer()
 
                     ReviewProjectView(
-                        projectNotes: projectNotes,
-                        contactName: contactName,
                         selectedImage: selectedImage,
                         dismissSheet: {
                             withAnimation {
@@ -160,6 +152,7 @@ struct AdditionalInfoView: View {
                             }
                         }
                     )
+                    .environmentObject(viewModel)
                     .frame(maxWidth: .infinity)
                     .frame(height: (selectedImage != nil) ? (UIScreen.main.bounds.height * 0.75) : (UIScreen.main.bounds.height * 0.50))
                     .background(Color.white)

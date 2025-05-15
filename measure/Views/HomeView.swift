@@ -10,14 +10,8 @@ import SwiftUI
 struct HomeView: View {
     @State private var selectedTab = 0
     @State private var showCreateProject = false
-
+    @StateObject var viewModel = CreateProjectViewModel()
     let tabs = ["Active", "Uploaded"]
-    let projects = [
-        Project(title: "Garry Taylor", date: "08.29.2023 at 11:25 AM", imageName: "pool_1"),
-        Project(title: "Garry Taylor", date: "08.29.2023 at 11:25 AM", imageName: "pool_2"),
-        Project(title: "Garry Taylor", date: "08.29.2023 at 11:25 AM", imageName: "pool_3")
-    ]
-
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -28,6 +22,7 @@ struct HomeView: View {
                         .foregroundColor(.white)
                     Spacer()
                     Button("+ New project") {
+                        viewModel.reset()
                         showCreateProject = true
                     }
                     .font(.system(size: 17, weight: .medium))
@@ -41,6 +36,7 @@ struct HomeView: View {
                         }
                         .presentationDetents([.fraction(0.80)])
                         .presentationDragIndicator(.visible)
+                        .environmentObject(viewModel)
                     }
                 }
                 .padding()
@@ -70,8 +66,14 @@ struct HomeView: View {
                 // Project Cards List
                 ScrollView {
                     VStack(spacing: 16) {
-                        ForEach(projects) { project in
-                            ProjectCard(project: project)
+                        if selectedTab == 0 {
+                            ForEach(viewModel.activeProjects) { project in
+                                ProjectCard(project: project)
+                            }
+                        } else {
+                            ForEach(viewModel.uploadedProjects) { project in
+                                ProjectCard(project: project)
+                            }
                         }
                     }
                     .padding()

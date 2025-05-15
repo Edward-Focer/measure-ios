@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct ReviewProjectView: View {
-    var projectNotes: String
-    var contactName: String
+    @EnvironmentObject var viewModel: CreateProjectViewModel
     var selectedImage: UIImage?
     var dismissSheet: (() -> Void)? = nil
 
@@ -27,12 +26,12 @@ struct ReviewProjectView: View {
                     Text("Project notes")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-                    CustomTextField(placeholder: "Project notes", text: .constant(projectNotes))
+                    CustomTextField(placeholder: "Project notes", text: .constant(viewModel.notes))
 
                     Text("Primary contact name")
                         .font(.system(size: 16, weight: .bold))
                         .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
-                    CustomTextField(placeholder: "Full name", text: .constant(contactName))
+                    CustomTextField(placeholder: "Full name", text: .constant(viewModel.contactName))
 
                     if let image = selectedImage {
                         Image(uiImage: image)
@@ -43,6 +42,13 @@ struct ReviewProjectView: View {
                     }
 
                     Button("Done") {
+                        if let capturedImage = selectedImage {
+                            let fileName = "\(UUID().uuidString).jpg"
+                            if let savedURL = Utility.shared.saveImageToDocuments(image: capturedImage, fileName: fileName) {
+                                viewModel.selectedImageUrl = savedURL.path
+                            }
+                        }
+                        viewModel.saveProject()
                         dismissSheet?()
                     }
                     .font(.system(size: 17, weight: .semibold))

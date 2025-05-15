@@ -9,14 +9,9 @@ import SwiftUI
 
 struct CreateNewProjectView: View {
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var viewModel: CreateProjectViewModel
     var dismissSheet: (() -> Void)? = nil
-    
-    @State private var projectName = ""
-    @State private var contactName = ""
-    @State private var email = ""
-    @State private var phoneNumber = ""
     @State private var goToNext = false
-    
     
     var body: some View {
             ZStack(alignment: .topTrailing) {
@@ -44,7 +39,7 @@ struct CreateNewProjectView: View {
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
                             
-                            CustomTextField(placeholder: "Name", text: $projectName)
+                            CustomTextField(placeholder: "Name", text: $viewModel.name)
                         }
                         
                         // Homeowner Details
@@ -58,24 +53,25 @@ struct CreateNewProjectView: View {
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
                             
-                            CustomTextField(placeholder: "Name", text: $contactName)
+                            CustomTextField(placeholder: "Name", text: $viewModel.contactName)
                             
                             Text("Email")
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
                             
-                            CustomTextField(placeholder: "Email", text: $email, keyboardType: .emailAddress)
+                            CustomTextField(placeholder: "Email", text: $viewModel.email, keyboardType: .emailAddress)
                             
                             Text("Phone number")
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(Color(red: 0/255, green: 46/255, blue: 94/255))
                             
-                            CustomTextField(placeholder: "+1 xxx xxx xxx", text: $phoneNumber, keyboardType: .phonePad)
+                            CustomTextField(placeholder: "+1 xxx xxx xxx", text: $viewModel.phoneNumber, keyboardType: .phonePad)
                         }
                         
                         // Next Button
                         NavigationLink(
-                            destination: AdditionalInfoView(dismissSheet: dismissSheet, contactName: contactName),
+                            destination: AdditionalInfoView(dismissSheet: dismissSheet)
+                                .environmentObject(viewModel),
                             isActive: $goToNext
                         ) {
                             EmptyView()
@@ -83,6 +79,7 @@ struct CreateNewProjectView: View {
                         
                         Button(action: {
                             goToNext = true
+                            viewModel.address = Address(line1: "", line2: "", city: "", state: "", zipcode: "")
                         }) {
                             Text("Next")
                                 .font(.system(size: 17, weight: .semibold))

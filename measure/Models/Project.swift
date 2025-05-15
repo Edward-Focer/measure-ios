@@ -9,7 +9,12 @@ import Foundation
 
 struct Project: Identifiable {
     let id = UUID()
-    let title: String
+    let name: String
+    let contactName: String
+    let email: String
+    let phoneNumber: String
     let date: String
-    let imageName: String
+    let imageLocalPath: String?
+    let notes: String
+    let address: Address
 }

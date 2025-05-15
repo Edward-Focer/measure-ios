@@ -12,15 +12,25 @@ struct ProjectCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Image(project.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(height: 160)
-                .clipped()
-                .cornerRadius(10, corners: [.topLeft, .topRight])
+            
+            if let path = project.imageLocalPath, let image = Utility.shared.loadImageFromDocuments(path: path) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 160)
+                    .clipped()
+                    .cornerRadius(10, corners: [.topLeft, .topRight])
+            } else {
+                Image(project.imageLocalPath ?? "pool_2")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 160)
+                    .clipped()
+                    .cornerRadius(10, corners: [.topLeft, .topRight])
+            }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(project.title)
+                Text(project.name)
                     .font(.headline)
                     .foregroundColor(.white)
                 Text("Scan Completed on \(project.date)")
