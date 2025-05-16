@@ -18,9 +18,10 @@ class CreateProjectViewModel: ObservableObject {
             email: "garry@example.com",
             phoneNumber: "+1 123-456-7890",
             date: "08.29.2023 at 11:25 AM",
-            imageLocalPath: "pool_1",
-            notes: "Sample notes here",
-            address: Address(line1: "123 Main St", line2: "Apt 4B", city: "New York", state: "NY", zipcode: "10001")
+            imageLocalPath: ["pool_1"],
+            notes: "Test pool",
+            address: Address(line1: "123 Main St", line2: "Apt 4B", city: "New York", state: "NY", zipcode: "10001"),
+            scans: []
         ),
         Project(
             name: "Jane Doe",
@@ -28,9 +29,10 @@ class CreateProjectViewModel: ObservableObject {
             email: "jane@example.com",
             phoneNumber: "+1 987-654-3210",
             date: "09.01.2023 at 09:00 AM",
-            imageLocalPath: "pool_2",
-            notes: "Another note here",
-            address: Address(line1: "123 Main St", line2: "Apt 4B", city: "New York", state: "NY", zipcode: "10001")
+            imageLocalPath: ["pool_2"],
+            notes: "Test pool",
+            address: Address(line1: "123 Main St", line2: "Apt 4B", city: "New York", state: "NY", zipcode: "10001"),
+            scans: []
         ),
         Project(
             name: "John Smith",
@@ -38,9 +40,10 @@ class CreateProjectViewModel: ObservableObject {
             email: "john@example.com",
             phoneNumber: "+1 555-555-5555",
             date: "09.15.2023 at 05:30 PM",
-            imageLocalPath: "pool_3",
-            notes: "Additional notes",
-            address: Address(line1: "123 Main St", line2: "Apt 4B", city: "New York", state: "NY", zipcode: "10001")
+            imageLocalPath: ["pool_3"],
+            notes: "Test pool",
+            address: Address(line1: "123 Main St", line2: "Apt 4B", city: "New York", state: "NY", zipcode: "10001"),
+            scans: []
         )
     ]
     @Published var uploadedProjects: [Project] = []
@@ -58,10 +61,13 @@ class CreateProjectViewModel: ObservableObject {
     @Published var notes: String = ""
     
     // Selected project image
-    @Published var selectedImageUrl: String = ""
+    @Published var selectedImageUrl: [String] = []
     
     // Date of project creation - you can generate it on submission or initialize here
     @Published var date: String = ""
+    
+    // Scans
+    @Published var scans: [Scan] = []
     
     // Reset all form fields to initial empty states
     func reset() {
@@ -71,8 +77,9 @@ class CreateProjectViewModel: ObservableObject {
         phoneNumber = ""
         address = Address(line1: "", line2: "", city: "", state: "", zipcode: "")
         notes = ""
-        selectedImageUrl = ""
+        selectedImageUrl = []
         date = ""
+        scans = []
     }
     
     // Create a Project instance from current data
@@ -85,7 +92,8 @@ class CreateProjectViewModel: ObservableObject {
             date: date.isEmpty ? Self.currentDateString() : date,
             imageLocalPath: selectedImageUrl, // If image is local, you may store image path or id, or handle differently
             notes: notes,
-            address: Address(line1: address.line1, line2: address.line2, city: address.city, state: address.state, zipcode: address.zipcode)
+            address: Address(line1: address.line1, line2: address.line2, city: address.city, state: address.state, zipcode: address.zipcode),
+            scans: scans
         )
     }
     

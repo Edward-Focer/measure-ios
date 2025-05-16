@@ -45,7 +45,7 @@ struct ReviewProjectView: View {
                         if let capturedImage = selectedImage {
                             let fileName = "\(UUID().uuidString).jpg"
                             if let savedURL = Utility.shared.saveImageToDocuments(image: capturedImage, fileName: fileName) {
-                                viewModel.selectedImageUrl = savedURL.path
+                                viewModel.selectedImageUrl.append(savedURL.path)
                             }
                         }
                         viewModel.saveProject()
