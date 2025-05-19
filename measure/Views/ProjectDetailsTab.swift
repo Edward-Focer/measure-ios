@@ -23,7 +23,7 @@ struct ProjectDetailsTab: View {
                     .cornerRadius(10, corners: [.topLeft, .topRight])
             } else {
                 // Placeholder Image in case image is missing or unavailable
-                Image(project.imageLocalPath?.first ?? "pool_2") // Replace with an actual placeholder image
+                Image(project.imageLocalPath?.first ?? "") // Replace with an actual placeholder image
                     .resizable()
                     .scaledToFill()
                     .frame(height: 200)

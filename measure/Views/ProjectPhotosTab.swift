@@ -11,44 +11,67 @@ struct ProjectPhotosTab: View {
     @State private var showImagePicker = false
     @State private var selectedImage: UIImage? = nil
     let project: Project
-    
+
+    // Define grid layout
+    private let columns = [
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
+    ]
+
     var body: some View {
         VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 12) {
                     ForEach(project.imageLocalPath ?? [], id: \.self) { path in
                         if let image = Utility.shared.loadImageFromDocuments(path: path) {
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 100, height: 100)
+                                .frame(maxWidth: .infinity)
+                                .clipped()
+                                .cornerRadius(8)
+                        } else {
+                            Image(path) // default asset image fallback
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity)
+                                .clipped()
                                 .cornerRadius(8)
                         }
                     }
                 }
+                .padding(.horizontal)
+                .padding(.top, 10)
             }
-            .padding()
-            
+
             Spacer()
-            
-            // Add Photo
+
+            // Add Photo Button
             Button(action: {
                 showImagePicker.toggle()
             }) {
                 Text("Add photo")
                     .frame(maxWidth: .infinity)
-                    .padding()
+                    .frame(height: 50)
                     .background(Color(red: 0/255, green: 46/255, blue: 94/255)) // Deep Sea Blue
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .font(.system(size: 17, weight: .semibold))
             }
-            .padding()
-
+            .padding(.horizontal)
+            .padding(.bottom, 16)
         }
-        .navigationTitle(project.notes)
         .navigationBarBackButtonHidden(true)
-        .sheet(isPresented: $showImagePicker) {
+        .sheet(isPresented: $showImagePicker, onDismiss: {
+            if let image = selectedImage {
+                if let savedPath = Utility.shared.saveImageToDocuments(image: image, fileName: "photo_\(UUID().uuidString).jpg") {
+                    if var paths = project.imageLocalPath {
+                        paths.append(savedPath.lastPathComponent)
+                        print("✅ Image saved and path appended:", savedPath.lastPathComponent)
+                    }
+                }
+            }
+        }) {
             GalleryImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
         }
     }

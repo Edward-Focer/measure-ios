@@ -18,10 +18,17 @@ class CreateProjectViewModel: ObservableObject {
             email: "garry@example.com",
             phoneNumber: "+1 123-456-7890",
             date: "08.29.2023 at 11:25 AM",
-            imageLocalPath: ["pool_1"],
+            imageLocalPath: ["pool_1", "pool_2", "pool_3"],
             notes: "Test pool",
             address: Address(line1: "123 Main St", line2: "Apt 4B", city: "New York", state: "NY", zipcode: "10001"),
-            scans: []
+            scans: [
+                Scan(date: "08-29-2023", scanner: "Stu Sales Test", uploaded: false),
+                Scan(date: "08-29-2023", scanner: "Stu Sales Test", uploaded: false),
+                Scan(date: "08-29-2023", scanner: "Stu Sales Test", uploaded: false),
+                Scan(date: "08-29-2023", scanner: "Stu Sales Test", uploaded: false),
+                Scan(date: "08-29-2023", scanner: "Stu Sales Test", uploaded: false),
+                Scan(date: "08-29-2023", scanner: "Stu Sales Test", uploaded: false)
+            ]
         ),
         Project(
             name: "Jane Doe",
