@@ -10,6 +10,7 @@ import SwiftUI
 struct ProjectPoolTab: View {
     let project: Project
     @State private var showScanOption = false
+    @State private var showInitialScan = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -91,6 +92,7 @@ struct ProjectPoolTab: View {
             VStack(spacing: 16) {
                 Button(action: {
                     // Upload to Portal
+                    showInitialScan = true
                 }) {
                     Text("Upload to Portal")
                         .frame(maxWidth: .infinity)
@@ -122,6 +124,9 @@ struct ProjectPoolTab: View {
         .padding(.top)
         .background(Color(red: 242/255, green: 243/255, blue: 245/255).ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
+        .fullScreenCover(isPresented: $showInitialScan) {
+            InitialScanView()
+        }
         .overlay(
             ZStack {
                 if showScanOption {
