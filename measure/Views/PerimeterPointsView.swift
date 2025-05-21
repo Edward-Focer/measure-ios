@@ -12,13 +12,14 @@ struct PerimeterPointsView: View {
     @State private var pointsCount: Int = 0
     @Environment(\.presentationMode) var presentationMode
     @State private var showPerimeterPopup = true
-
+    @State private var showPointsPopup = false
+    
     var body: some View {
         NavigationView {
             ZStack {
                 VideoPreview()
                     .ignoresSafeArea()
-
+                
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
                         DistanceView()
@@ -37,7 +38,7 @@ struct PerimeterPointsView: View {
                         .padding(.top, 8)
                     
                     Spacer()
-
+                    
                     // Camera target overlay & instructions
                     ZStack {
                         HStack {
@@ -51,9 +52,9 @@ struct PerimeterPointsView: View {
                                         .foregroundColor(.white)
                                         .offset(y: 30)
                                 )
-
+                            
                             Spacer()
-
+                            
                             // Right vertical indicator
                             RoundedRectangle(cornerRadius: 4)
                                 .frame(width: 6, height: 150)
@@ -66,7 +67,7 @@ struct PerimeterPointsView: View {
                                 )
                         }
                         .padding(.horizontal, 24)
-
+                        
                         VStack(spacing: 8) {
                             // Target reticle
                             Circle()
@@ -79,21 +80,21 @@ struct PerimeterPointsView: View {
                                         path.move(to: CGPoint(x: 0, y: 30))
                                         path.addLine(to: CGPoint(x: 60, y: 30))
                                     }
-                                    .stroke(Color.white, lineWidth: 1)
+                                        .stroke(Color.white, lineWidth: 1)
                                 )
-
+                            
                             Text("Please move the camera\naround the pool")
                                 .foregroundColor(.white)
                                 .multilineTextAlignment(.center)
                                 .font(.subheadline)
-
+                            
                             Text("<– –>")
                                 .foregroundColor(.white)
                                 .font(.title2)
                         }
                     }
                     .padding(.bottom, 32)
-
+                    
                     Spacer()
                     
                     // Buttons
@@ -109,11 +110,11 @@ struct PerimeterPointsView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
-
+                        
                         Button(action: {
                             // Action for Save
                             // e.g. dismiss or save points
-                            presentationMode.wrappedValue.dismiss()
+                            showPointsPopup = true
                         }) {
                             Text("Save")
                                 .frame(maxWidth: .infinity)
@@ -137,6 +138,14 @@ struct PerimeterPointsView: View {
                     }
                     .transition(.move(edge: .bottom))
                     .animation(.easeInOut, value: showPerimeterPopup)
+                }
+                if showPointsPopup {
+                    VStack {
+                        Spacer()
+                        PerimeterPointsPopup(isPresented: $showPointsPopup) // No trailing closure here
+                    }
+                    .transition(.move(edge: .bottom))
+                    .animation(.easeInOut, value: showPointsPopup)
                 }
             }
             .navigationBarTitle("Perimeter points", displayMode: .inline)
