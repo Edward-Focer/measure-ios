@@ -9,12 +9,17 @@ import SwiftUI
 
 struct InitialScanView: View {
     @Environment(\.presentationMode) var presentationMode
+    @State private var scanProgress: CGFloat = 0.1 // Initial dummy progress
+    @State private var showScanProgress = true
+    @State private var scanComplete = false
     @State private var showTutorial = true
+    @State private var navigateToPerimeterPoints = false
 
     var body: some View {
         NavigationView {
             ZStack {
-                Color.green.opacity(0.1).ignoresSafeArea()
+                VideoPreview()
+                    .ignoresSafeArea()
 
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
@@ -43,9 +48,9 @@ struct InitialScanView: View {
                                         .foregroundColor(.white)
                                         .offset(y: 30)
                                 )
-
+                            
                             Spacer()
-
+                            
                             // Right vertical indicator
                             RoundedRectangle(cornerRadius: 4)
                                 .frame(width: 6, height: 150)
@@ -58,7 +63,7 @@ struct InitialScanView: View {
                                 )
                         }
                         .padding(.horizontal, 24)
-
+                        
                         VStack(spacing: 8) {
                             // Target reticle
                             Circle()
@@ -71,38 +76,46 @@ struct InitialScanView: View {
                                         path.move(to: CGPoint(x: 0, y: 30))
                                         path.addLine(to: CGPoint(x: 60, y: 30))
                                     }
-                                    .stroke(Color.white, lineWidth: 1)
+                                        .stroke(Color.white, lineWidth: 1)
                                 )
-
+                            
                             Text("Please move the camera\naround the pool")
                                 .foregroundColor(.white)
                                 .multilineTextAlignment(.center)
                                 .font(.subheadline)
-
+                            
                             Text("<– –>")
                                 .foregroundColor(.white)
                                 .font(.title2)
                         }
                     }
-
+                    
+                    Spacer()
+                    
                     // Scanning progress bar
-                    VStack(spacing: 4) {
-                        ZStack(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.white.opacity(0.4))
-                                .frame(height: 20)
-
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.blue)
-                                .frame(width: 180, height: 20)
+                    if showScanProgress {
+                        VStack(spacing: 4) {
+                            GeometryReader { geometry in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.white.opacity(0.4))
+                                        .frame(height: 20)
+                                    
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.blue)
+                                        .frame(width: geometry.size.width * scanProgress, height: 20)
+                                        .animation(.easeInOut, value: scanProgress)
+                                }
+                            }
+                            .frame(height: 20)
+                            .padding(.horizontal, 32)
+                            
+                            Text("Scanning...  \(Int(scanProgress * 100))%")
+                                .foregroundColor(.white)
+                                .font(.footnote)
                         }
-                        .padding(.horizontal, 32)
-
-                        Text("Scanning...  50%")
-                            .foregroundColor(.white)
-                            .font(.footnote)
+                        .padding(.bottom, 32)
                     }
-                    .padding(.bottom, 32)
                 }
                 
                 if showTutorial {
@@ -112,6 +125,25 @@ struct InitialScanView: View {
                             .transition(.move(edge: .bottom))
                             .zIndex(1)
                     }
+                }
+                if scanComplete {
+                    VStack {
+                            Spacer()
+
+                            ScanCompletionPopup {
+                                // handle Start Capturing Points
+                                scanComplete = false
+                                showScanProgress = false
+                                navigateToPerimeterPoints = true
+                            }
+                        }
+                        .transition(.move(edge: .bottom))
+                        .animation(.easeInOut, value: scanComplete)
+                }
+                
+                // Hidden NavigationLink
+                NavigationLink(destination: PerimeterPointsView().navigationBarBackButtonHidden(true), isActive: $navigateToPerimeterPoints) {
+                    EmptyView()
                 }
             }
             .navigationBarTitle("Initial Scan", displayMode: .inline)
@@ -132,10 +164,17 @@ struct InitialScanView: View {
                         .foregroundColor(.white)
                 }
             )
-            .background(
-                Color.green.opacity(0.1)
-                    .ignoresSafeArea(edges: .top)
-            )
+            .onChange(of: showTutorial) {
+                Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                    if scanProgress < 1.0 {
+                        scanProgress += 0.02
+                    } else {
+                        scanProgress = 1.0
+                        scanComplete = true
+                        timer.invalidate()
+                    }
+                }
+            }
         }
     }
 }
@@ -149,7 +188,7 @@ struct DistanceView: View {
             Text("Distance")
                 .font(.caption)
         }
-        .frame(maxWidth: .infinity, minHeight: 100)
+        .frame(maxWidth: .infinity,  minHeight: 120)
         .padding()
         .background(Color.white.opacity(0.6))
         .cornerRadius(10)
@@ -165,7 +204,7 @@ struct AzimuthElevationView: View {
             Text("Az, El")
                 .font(.caption)
         }
-        .frame(maxWidth: .infinity, minHeight: 100)
+        .frame(maxWidth: .infinity,  minHeight: 120)
         .padding()
         .background(Color.white.opacity(0.6))
         .cornerRadius(10)
@@ -181,7 +220,7 @@ struct XYZView: View {
             Text("XYZ")
                 .font(.caption)
         }
-        .frame(maxWidth: .infinity, minHeight: 100)
+        .frame(maxWidth: .infinity,  minHeight: 120)
         .padding()
         .background(Color.white.opacity(0.6))
         .cornerRadius(10)
@@ -190,6 +229,7 @@ struct XYZView: View {
 
 struct TutorialPopup: View {
     @Binding var showTutorial: Bool
+    @State private var isLoadingVideo = true
 
     var body: some View {
         VStack(spacing: 16) {
@@ -210,15 +250,16 @@ struct TutorialPopup: View {
                 }
             }
             .padding(.horizontal)
+            
+            ZStack {
+                YouTubePlayerView(videoID: "5qap5aO4i9A", isLoading: $isLoadingVideo)
+                    .frame(height: 200)
+                    .cornerRadius(12)
 
-            Link(destination: URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")!) {
-                Text("Video")
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 150)
-                    .background(Color(.systemGray5))
-                    .cornerRadius(8)
-                    .foregroundColor(.blue)
-                    .font(.system(size: 17, weight: .semibold))
+                if isLoadingVideo {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                }
             }
             .padding(.horizontal)
 
